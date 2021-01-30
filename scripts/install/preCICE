@@ -1,0 +1,31 @@
+#!/bin/bash -xe
+
+export preCICE_VERSION=2.1.1
+
+export preCICE_BUILD_DIR='/opt/preCICE'
+export PRECICE_ROOT="${preCICE_BUILD_DIR}/precice-${preCICE_VERSION}"
+
+echo "export preCICE_VERSION=${preCICE_VERSION}" >> /etc/profile.d/buildenv.sh
+echo "export preCICE_BUILD_DIR=${preCICE_BUILD_DIR}" >> /etc/profile.d/buildenv.sh
+echo "export PRECICE_ROOT=${PRECICE_ROOT}" >> /etc/profile.d/buildenv.sh
+
+# ------------------------------------------------------------------------------
+mkdir -p ${preCICE_BUILD_DIR}
+cd ${preCICE_BUILD_DIR}
+wget -q https://github.com/precice/precice/archive/v${preCICE_VERSION}.tar.gz
+tar -xzvf v${preCICE_VERSION}.tar.gz
+rm -f v${preCICE_VERSION}.tar.gz
+mkdir -p ${PRECICE_ROOT}/build && cd ${PRECICE_ROOT}/build
+
+# TODO: PRECICE_PETScMapping=off because of fedora petsc-devel will crash the configuration routine.
+cmake                                                                           \
+  -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release                             \
+  -DPRECICE_MPICommunication=ON                                                 \
+  -DMPI_CXX_COMPILER=/usr/lib64/openmpi/bin/mpicxx                              \
+  -DMPI_C_COMPILER=/usr/lib64/openmpi/bin/mpicc                                 \
+  -DMPI_Fortran_COMPILER=/usr/lib64/openmpi/bin/mpifort                         \
+  -DPRECICE_PETScMapping=off                                                    \
+  ..
+
+make -j$(nproc)
+make install && make clean && rm -rf *

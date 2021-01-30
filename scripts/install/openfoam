@@ -1,0 +1,48 @@
+#!/bin/bash -xe
+
+export WM_NCOMPPROCS=$(grep -c ^processor /proc/cpuinfo)
+
+# ------------------------------------------------------------------------------
+#
+export OPENFOAM_DIR="/opt/OpenFOAM-${OPENFOAM_VERSION}"
+export OPENFOAM_THIRDPARTY_DIR="/opt/ThirdParty-${OPENFOAM_VERSION}"
+
+echo "export OPENFOAM_DIR=${OPENFOAM_DIR}" >> /etc/profile.d/buildenv.sh
+echo "export OPENFOAM_THIRDPARTY_DIR=${OPENFOAM_THIRDPARTY_DIR}" >> /etc/profile.d/buildenv.sh
+
+# ------------------------------------------------------------------------------
+# load sources
+git clone --branch $OPENFOAM_GIT_BRANCH            $OPENFOAM_GIT_URL            $OPENFOAM_DIR
+git clone --branch $OPENFOAM_THIRDPARTY_GIT_BRANCH $OPENFOAM_THIRDPARTY_GIT_URL $OPENFOAM_THIRDPARTY_DIR
+
+cd $OPENFOAM_DIR
+echo ". $OPENFOAM_DIR/etc/bashrc" >> /etc/profile.d/openfoam.sh
+
+# ------------------------------------------------------------------------------
+# build openfoam
+
+# ensure label size of 64 bit
+#sed -ie  's|WM_LABEL_SIZE=32|WM_LABEL_SIZE=64|' ${OPENFOAM_DIR}/etc/bashrc
+
+# config env
+. /etc/profile.d/openfoam.sh || echo "skip errors."
+
+#
+cd ${OPENFOAM_THIRDPARTY_DIR}
+./Allwmake -j
+
+#
+cd ${OPENFOAM_DIR}
+./Allwmake -j
+
+# ------------------------------------------------------------------------------
+# cleanup openfoam
+
+cd ${OPENFOAM_THIRDPARTY_DIR}
+./Allclean
+
+cd ${OPENFOAM_DIR}
+#./Allclean
+find -name '*.o' | xargs rm
+find -name '*.dep' | xargs rm
+#rm -rf build/*

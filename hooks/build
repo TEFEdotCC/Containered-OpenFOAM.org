@@ -1,0 +1,13 @@
+#!/bin/bash -xe
+. ./hooks/env
+
+docker build \
+	--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`                       \
+	--build-arg "SOURCE_COMMIT=$GIT_SHA1"                                        \
+	--build-arg "DOCKERFILE_PATH=$DOCKERFILE_PATH"                               \
+	--build-arg "OPENFOAM_GIT_URL=$OPENFOAM_GIT_URL"                             \
+	--build-arg "OPENFOAM_VERSION=$OPENFOAM_VERSION"                             \
+	--build-arg "OPENFOAM_THIRDPARTY_GIT_URL=$OPENFOAM_THIRDPARTY_GIT_URL"       \
+	--build-arg "OPENFOAM_GIT_BRANCH=$OPENFOAM_GIT_BRANCH"                       \
+	--build-arg "OPENFOAM_THIRDPARTY_GIT_BRANCH=$OPENFOAM_THIRDPARTY_GIT_BRANCH" \
+	-t $IMAGE_NAME .
