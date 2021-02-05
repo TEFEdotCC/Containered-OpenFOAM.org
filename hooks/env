@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#
+[ -n "$SOURCE_BRANCH" ]  || SOURCE_BRANCH=$(git symbolic-ref -q --short HEAD)
+[ -n "$GIT_SHA1" ]       || GIT_SHA1=$(git rev-parse -q HEAD)
+
+#
+#
+export OPENFOAM_GIT_BASE_URL="https://github.com/OpenFOAM/OpenFOAM-"
+export OPENFOAM_THIRDPARTY_GIT_BASE_URL="https://github.com/OpenFOAM/ThirdParty-"
+export OPENFOAM_GIT_BRANCH="master"
+export OPENFOAM_THIRDPARTY_GIT_BRANCH="master"
+
+#
+if [ "$SOURCE_BRANCH" = "main" ]; then
+  #
+  # branch : dev
+  #   mostly stable branch for next release.
+  export OPENFOAM_VERSION="dev"
+  export IMAGE_VERSION="dev"
+else
+  export OPENFOAM_VERSION="$SOURCE_BRANCH"
+  export IMAGE_VERSION="$SOURCE_BRANCH"
+fi
+
+export OPENFOAM_GIT_URL="${OPENFOAM_GIT_BASE_URL}${OPENFOAM_VERSION}"
+export OPENFOAM_THIRDPARTY_GIT_URL="${OPENFOAM_THIRDPARTY_GIT_BASE_URL}${OPENFOAM_VERSION}"
+export OPENFOAM_DIR="/opt/OpenFOAM-${OPENFOAM_VERSION}"
+export OPENFOAM_THIRDPARTY_DIR="/opt/ThirdParty-${OPENFOAM_VERSION}"
+
+#
+# Set defaults for build arguments 
+[ -n "$SOURCE_TYPE" ]        || SOURCE_TYPE=git
+[ -n "$DOCKERFILE_PATH" ]    || DOCKERFILE_PATH=.
+[ -n "$IMAGE_NAME" ]         || IMAGE_NAME=tefe/openfoam.org:$IMAGE_VERSION

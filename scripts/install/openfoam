@@ -1,0 +1,40 @@
+#!/bin/bash -xe
+
+export WM_NCOMPPROCS=$(grep -c ^processor /proc/cpuinfo)
+
+# ------------------------------------------------------------------------------
+# load sources
+git clone --branch $OPENFOAM_GIT_BRANCH            $OPENFOAM_GIT_URL            $OPENFOAM_DIR
+git clone --branch $OPENFOAM_THIRDPARTY_GIT_BRANCH $OPENFOAM_THIRDPARTY_GIT_URL $OPENFOAM_THIRDPARTY_DIR
+
+cd $OPENFOAM_DIR
+echo ". $OPENFOAM_DIR/etc/bashrc" >> /etc/profile.d/openfoam.sh
+
+# ------------------------------------------------------------------------------
+# build openfoam
+
+# ensure label size of 64 bit
+#sed -ie  's|WM_LABEL_SIZE=32|WM_LABEL_SIZE=64|' ${OPENFOAM_DIR}/etc/bashrc
+
+# config env
+. /etc/profile.d/openfoam.sh || echo "skip errors."
+
+#
+cd ${OPENFOAM_THIRDPARTY_DIR}
+./Allwmake -j
+
+#
+cd ${OPENFOAM_DIR}
+./Allwmake -j
+
+# ------------------------------------------------------------------------------
+# cleanup openfoam
+
+cd ${OPENFOAM_THIRDPARTY_DIR}
+./Allclean
+
+cd ${OPENFOAM_DIR}
+#./Allclean
+find -name '*.o' | xargs rm
+find -name '*.dep' | xargs rm
+#rm -rf build/*
