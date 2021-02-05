@@ -1,4 +1,4 @@
-FROM fedora:32
+FROM fedora:33
 LABEL author "Thomas Enzinger <info@tefe.cc>"
 
 ARG BUILD_DATE

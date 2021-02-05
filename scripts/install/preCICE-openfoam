@@ -13,9 +13,9 @@ git clone --branch develop_cht_rework ${preCICE_adapter_of_GIT_URL} ${preCICE_ad
 
 # ------------------------------------------------------------------------------
 cd ${preCICE_adapter_BUILD_DIR}/openfoam-adapter
-sed -ie "s|ADAPTER_WMAKE_OPTIONS=\"|ADAPTER_WMAKE_OPTIONS=\"-j |" Allwmake
-#sed -ie 's|-DADAPTER_DEBUG_MODE| |' Allwmake
-sed -ie 's|${FOAM_USER_LIBBIN}|${FOAM_EXT_LIBBIN}|' Allwmake
+
+export ADAPTER_WMAKE_OPTIONS"-j"
+export ADAPTER_TARGET_DIR="${FOAM_EXT_LIBBIN}"
 
 ./Allwmake
 ./Allclean
