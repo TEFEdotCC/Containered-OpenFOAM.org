@@ -1,0 +1,21 @@
+#!/bin/bash -xe
+
+. /etc/profile.d/buildenv.sh || echo "skip errors."
+. /etc/profile.d/openfoam.sh || echo "skip errors."
+
+# ------------------------------------------------------------------------------
+preCICE_adapter_BUILD_DIR=${preCICE_BUILD_DIR}
+#preCICE_adapter_of_GIT_URL='https://github.com/precice/openfoam-adapter.git'
+preCICE_adapter_of_GIT_URL='https://github.com/TEFEdotCC/openfoam-adapter.git'
+
+#git clone ${preCICE_adapter_of_GIT_URL} ${preCICE_adapter_BUILD_DIR}/openfoam-adapter
+git clone --branch develop_cht_rework ${preCICE_adapter_of_GIT_URL} ${preCICE_adapter_BUILD_DIR}/openfoam-adapter
+
+# ------------------------------------------------------------------------------
+cd ${preCICE_adapter_BUILD_DIR}/openfoam-adapter
+
+export ADAPTER_WMAKE_OPTIONS="-j"
+export ADAPTER_TARGET_DIR="${FOAM_EXT_LIBBIN}"
+
+./Allwmake
+./Allclean
