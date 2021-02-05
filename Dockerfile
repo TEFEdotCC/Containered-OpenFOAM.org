@@ -7,19 +7,21 @@ ARG DOCKERFILE_PATH
 ARG SOURCE_TYPE
 
 ARG OPENFOAM_GIT_URL
-ARG OPENFOAM_VERSION
 ARG OPENFOAM_THIRDPARTY_GIT_URL
 ARG OPENFOAM_GIT_BRANCH
+ARG OPENFOAM_THIRDPARTY_GIT_BRANCH
+ARG OPENFOAM_DIR
 ARG OPENFOAM_THIRDPARTY_GIT_BRANCH
 
 RUN echo "export BUILD_DATE=${BUILD_DATE}" >> /etc/profile.d/buildenv.sh \
  && echo "export SOURCE_COMMIT=${SOURCE_COMMIT}" >> /etc/profile.d/buildenv.sh \
  && echo "export DOCKERFILE_PATH=${DOCKERFILE_PATH}" >> /etc/profile.d/buildenv.sh \
  && echo "export OPENFOAM_GIT_URL=${OPENFOAM_GIT_URL}" >> /etc/profile.d/buildenv.sh \
- && echo "export OPENFOAM_VERSION=${OPENFOAM_VERSION}" >> /etc/profile.d/buildenv.sh \
  && echo "export OPENFOAM_THIRDPARTY_GIT_URL=${OPENFOAM_THIRDPARTY_GIT_URL}" >> /etc/profile.d/buildenv.sh \
  && echo "export OPENFOAM_GIT_BRANCH=${OPENFOAM_GIT_BRANCH}" >> /etc/profile.d/buildenv.sh \
  && echo "export OPENFOAM_THIRDPARTY_GIT_BRANCH=${OPENFOAM_THIRDPARTY_GIT_BRANCH}" >> /etc/profile.d/buildenv.sh \
+ && echo "export OPENFOAM_DIR=${OPENFOAM_DIR}" >> /etc/profile.d/buildenv.sh \
+ && echo "export OPENFOAM_THIRDPARTY_DIR=${OPENFOAM_THIRDPARTY_DIR}" >> /etc/profile.d/buildenv.sh \
  && chmod +x /etc/profile.d/buildenv.sh
 
 
