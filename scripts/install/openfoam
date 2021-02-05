@@ -3,14 +3,6 @@
 export WM_NCOMPPROCS=$(grep -c ^processor /proc/cpuinfo)
 
 # ------------------------------------------------------------------------------
-#
-export OPENFOAM_DIR="/opt/OpenFOAM-${OPENFOAM_VERSION}"
-export OPENFOAM_THIRDPARTY_DIR="/opt/ThirdParty-${OPENFOAM_VERSION}"
-
-echo "export OPENFOAM_DIR=${OPENFOAM_DIR}" >> /etc/profile.d/buildenv.sh
-echo "export OPENFOAM_THIRDPARTY_DIR=${OPENFOAM_THIRDPARTY_DIR}" >> /etc/profile.d/buildenv.sh
-
-# ------------------------------------------------------------------------------
 # load sources
 git clone --branch $OPENFOAM_GIT_BRANCH            $OPENFOAM_GIT_URL            $OPENFOAM_DIR
 git clone --branch $OPENFOAM_THIRDPARTY_GIT_BRANCH $OPENFOAM_THIRDPARTY_GIT_URL $OPENFOAM_THIRDPARTY_DIR
