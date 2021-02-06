@@ -92,7 +92,7 @@ RUN rm -rf rm /opt/scripts && rm -f /opt/log.*
 #
 VOLUME ["/data"]
 WORKDIR /data
-USER foam
+#USER foam
 
 #
 ENTRYPOINT ["/bin/bash", "-ci"]
