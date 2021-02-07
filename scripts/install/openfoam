@@ -1,40 +1,78 @@
 #!/bin/bash -xe
 
+# ------------------------------------------------------------------------------
+#
+# OpenFOAM - src
+
 export WM_NCOMPPROCS=$(grep -c ^processor /proc/cpuinfo)
 
-# ------------------------------------------------------------------------------
-# load sources
 git clone --branch $OPENFOAM_GIT_BRANCH            $OPENFOAM_GIT_URL            $OPENFOAM_DIR
 git clone --branch $OPENFOAM_THIRDPARTY_GIT_BRANCH $OPENFOAM_THIRDPARTY_GIT_URL $OPENFOAM_THIRDPARTY_DIR
 
-cd $OPENFOAM_DIR
-echo ". $OPENFOAM_DIR/etc/bashrc" >> /etc/profile.d/openfoam.sh
-
-# ------------------------------------------------------------------------------
-# build openfoam
+echo '. $OPENFOAM_DIR/etc/bashrc || echo "skip return $?"'  >> /etc/profile.d/openfoam.sh
 
 # ensure label size of 64 bit
 #sed -ie  's|WM_LABEL_SIZE=32|WM_LABEL_SIZE=64|' ${OPENFOAM_DIR}/etc/bashrc
 
-# config env
-. /etc/profile.d/openfoam.sh || echo "skip errors."
+# ------------------------------------------------------------------------------
+#
+# scotch
+source $OPENFOAM_DIR/etc/config.sh/scotch
+# SCOTCH_VERSION=scotch_6.0.9
+
+export SCOTCH_VERSION_ENTIRE=$(echo "$SCOTCH_VERSION" | sed 's|^[^-_]*||' | sed 's|^-||' | sed 's|^_||')
+export SCOTCH_GIT_URL="https://gitlab.inria.fr/scotch/scotch.git"
+export SCOTCH_GIT_BRANCH="v${SCOTCH_VERSION_ENTIRE}"
+export SCOTCH_DIR="${OPENFOAM_THIRDPARTY_DIR}/scotch_${SCOTCH_VERSION_ENTIRE}"
+
+echo "export SCOTCH_VERSION_ENTIRE=${SCOTCH_VERSION_ENTIRE}" >> /etc/profile.d/buildenv.sh
+echo "export SCOTCH_GIT_URL=${SCOTCH_GIT_URL}" >> /etc/profile.d/buildenv.sh
+echo "export SCOTCH_GIT_BRANCH=${SCOTCH_GIT_BRANCH}" >> /etc/profile.d/buildenv.sh
+echo "export SCOTCH_DIR=${SCOTCH_DIR}" >> /etc/profile.d/buildenv.sh
+
+if [ ! -d ${SCOTCH_DIR} ] ; then
+    git clone --branch ${SCOTCH_GIT_BRANCH} ${SCOTCH_GIT_URL} ${SCOTCH_DIR}
+fi
+
+# ------------------------------------------------------------------------------
+#
+# metis
+source $OPENFOAM_DIR/etc/config.sh/metis
+# METIS_VERSION=metis-5.1.0
+
+export METIS_VERSION_ENTIRE=$(echo "$METIS_VERSION" | sed 's|^[^-_]*||' | sed 's|^-||' | sed 's|^_||')
+
+export METIS_ARCHIVE_FILE_NAME="metis-${METIS_VERSION_ENTIRE}.tar.gz"
+export METIS_DOWNLOAD_URL="http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/${METIS_ARCHIVE_FILE_NAME}"
+
+echo "export METIS_VERSION_ENTIRE=${METIS_VERSION_ENTIRE}" >> /etc/profile.d/buildenv.sh
+echo "export METIS_ARCHIVE_FILE_NAME=${METIS_ARCHIVE_FILE_NAME}" >> /etc/profile.d/buildenv.sh
+echo "export METIS_DOWNLOAD_URL=${METIS_DOWNLOAD_URL}" >> /etc/profile.d/buildenv.sh
+
+cd $OPENFOAM_THIRDPARTY_DIR
+wget -q ${METIS_DOWNLOAD_URL}
+tar -xzvf ${METIS_ARCHIVE_FILE_NAME}
+rm -f ${METIS_ARCHIVE_FILE_NAME}
+
+# ------------------------------------------------------------------------------
+#
+# OpenFOAM - build
+
+. /etc/profile.d/openfoam.sh
 
 #
 cd ${OPENFOAM_THIRDPARTY_DIR}
-./Allwmake -j
+./Allwmake
 
 #
 cd ${OPENFOAM_DIR}
 ./Allwmake -j
 
-# ------------------------------------------------------------------------------
 # cleanup openfoam
-
 cd ${OPENFOAM_THIRDPARTY_DIR}
 ./Allclean
 
 cd ${OPENFOAM_DIR}
-#./Allclean
 find -name '*.o' | xargs rm
 find -name '*.dep' | xargs rm
 #rm -rf build/*

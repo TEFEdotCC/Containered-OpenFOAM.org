@@ -44,7 +44,6 @@ RUN dnf update -y && dnf upgrade -y                                             
       CGAL-devel fftw-devel                                                                 \
       eigen3-devel libxml2-devel                                                            \
       scons valgrind-devel blas-devel openblas-devel gcc-gfortran                           \
-      metis-devel scotch scotch-devel                                                       \
       ptscotch-openmpi ptscotch-openmpi-devel ptscotch-openmpi-devel-parmetis               \
       petsc petsc-devel petsc-openmpi petsc-openmpi-devel                                   \
  && dnf clean all && rm -rf /usr/share/man/* /tmp/* /var/cache/dnf/*
