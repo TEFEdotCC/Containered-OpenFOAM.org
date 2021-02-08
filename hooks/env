@@ -25,8 +25,14 @@ fi
 
 export OPENFOAM_GIT_URL="${OPENFOAM_GIT_BASE_URL}${OPENFOAM_VERSION}"
 export OPENFOAM_THIRDPARTY_GIT_URL="${OPENFOAM_THIRDPARTY_GIT_BASE_URL}${OPENFOAM_VERSION}"
-export OPENFOAM_DIR="/opt/OpenFOAM-${OPENFOAM_VERSION}"
-export OPENFOAM_THIRDPARTY_DIR="/opt/ThirdParty-${OPENFOAM_VERSION}"
+
+export OPENFOAM_VERSION_ENTIRE=$(                                                 \
+    curl -s "${OPENFOAM_GIT_BASE_URL}/raw/master/etc/bashrc" \
+  | grep "export WM_PROJECT_VERSION=" |                                           \
+    awk -F"=" '{print $2}'                                                        \
+)
+export OPENFOAM_DIR="/opt/OpenFOAM-${OPENFOAM_VERSION_ENTIRE}"
+export OPENFOAM_THIRDPARTY_DIR="/opt/ThirdParty-${OPENFOAM_VERSION_ENTIRE}"
 
 #
 # Set defaults for build arguments 
