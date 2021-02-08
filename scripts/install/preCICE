@@ -1,21 +1,31 @@
 #!/bin/bash -xe
 
-export preCICE_VERSION=2.1.1
+get_latest_release() {
+  curl --silent "https://api.github.com/repos/$1/releases/latest" | # Get latest release from GitHub api
+    grep '"tag_name":' |                                            # Get tag line
+    sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
+}
+
+export preCICE_VERSION_ENTIRE=$(get_latest_release "precice/precice")
+export preCICE_VERSION=$(echo "$preCICE_VERSION_ENTIRE" | sed 's|^[^0-9]*||')
 
 export preCICE_BUILD_DIR='/opt/preCICE'
-export PRECICE_ROOT="${preCICE_BUILD_DIR}/precice-${preCICE_VERSION}"
+export preCICE_GIT_URL="https://github.com/precice/precice/archive/v${preCICE_VERSION}.tar.gz"
+export preCICE_ROOT="${preCICE_BUILD_DIR}/precice-${preCICE_VERSION}"
 
+echo "export preCICE_VERSION_ENTIRE=${preCICE_VERSION_ENTIRE}" >> /etc/profile.d/buildenv.sh
 echo "export preCICE_VERSION=${preCICE_VERSION}" >> /etc/profile.d/buildenv.sh
 echo "export preCICE_BUILD_DIR=${preCICE_BUILD_DIR}" >> /etc/profile.d/buildenv.sh
-echo "export PRECICE_ROOT=${PRECICE_ROOT}" >> /etc/profile.d/buildenv.sh
+echo "export preCICE_GIT_URL=${preCICE_GIT_URL}" >> /etc/profile.d/buildenv.sh
+echo "export preCICE_ROOT=${preCICE_ROOT}" >> /etc/profile.d/buildenv.sh
 
 # ------------------------------------------------------------------------------
 mkdir -p ${preCICE_BUILD_DIR}
 cd ${preCICE_BUILD_DIR}
-wget -q https://github.com/precice/precice/archive/v${preCICE_VERSION}.tar.gz
+wget -q ${preCICE_GIT_URL}
 tar -xzvf v${preCICE_VERSION}.tar.gz
 rm -f v${preCICE_VERSION}.tar.gz
-mkdir -p ${PRECICE_ROOT}/build && cd ${PRECICE_ROOT}/build
+mkdir -p ${preCICE_ROOT}/build && cd ${preCICE_ROOT}/build
 
 # TODO: PRECICE_PETScMapping=off because of fedora petsc-devel will crash the configuration routine.
 cmake                                                                           \
