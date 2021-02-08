@@ -27,7 +27,7 @@ export OPENFOAM_GIT_URL="${OPENFOAM_GIT_BASE_URL}${OPENFOAM_VERSION}"
 export OPENFOAM_THIRDPARTY_GIT_URL="${OPENFOAM_THIRDPARTY_GIT_BASE_URL}${OPENFOAM_VERSION}"
 
 export OPENFOAM_VERSION_ENTIRE=$(                                                 \
-    curl -s "${OPENFOAM_GIT_BASE_URL}/raw/master/etc/bashrc" \
+    curl -s "https://raw.githubusercontent.com/OpenFOAM/OpenFOAM-${OPENFOAM_VERSION}/master/etc/bashrc" \
   | grep "export WM_PROJECT_VERSION=" |                                           \
     awk -F"=" '{print $2}'                                                        \
 )
